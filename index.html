@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDP Talks — World Models :: AI · 17 May 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Syne:wght@400;500;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0f;
+    --paper: #f5f0e8;
+    --paper2: #ede8de;
+    --gold: #c9a84c;
+    --gold2: #e8c96a;
+    --violet: #3d2b6e;
+    --violet2: #5a3f9e;
+    --teal: #1a6b5a;
+    --rust: #8b3a1e;
+    --mist: #c8d4e0;
+    --line: rgba(10,10,15,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: normal;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,168,76,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s cubic-bezier(0.23,1,0.32,1), width 0.3s, height 0.3s, opacity 0.3s;
+  }
+  a:hover ~ .cursor, button:hover ~ .cursor { width: 14px; height: 14px; }
+
+  /* Noise overlay */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.35;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 20% 50%, #1a0e3d 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 80% 80%, #0d2e28 0%, transparent 55%),
+                radial-gradient(ellipse 50% 50% at 60% 20%, #2a1505 0%, transparent 50%),
+                var(--ink);
+  }
+
+  .star-field {
+    position: absolute; inset: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    from { opacity: var(--o1, 0.2); transform: scale(1); }
+    to   { opacity: var(--o2, 0.8); transform: scale(1.2); }
+  }
+
+  .hero-grid-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    transform: perspective(600px) rotateX(30deg) translateY(-10%);
+    transform-origin: center bottom;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 8rem 10vw 4rem;
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 40px; height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.4s forwards;
+  }
+
+  .hero-title .line1 { display: block; }
+  .hero-title .line2 {
+    display: block;
+    font-style: italic;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 50%, #f0d888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.7);
+    max-width: 560px;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.6s forwards;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 2.5rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.45);
+    opacity: 0;
+    animation: fadeUp 1s 0.8s forwards;
+  }
+
+  .scroll-hint {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 10vw;
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: rgba(245,240,232,0.3);
+    opacity: 0;
+    animation: fadeUp 1s 1.2s forwards;
+  }
+  .scroll-line {
+    width: 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245,240,232,0.3));
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-line::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: var(--gold);
+    animation: scanLine 2s 1.5s ease-in-out infinite;
+  }
+  @keyframes scanLine {
+    0%   { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* ── CHAPTER WRAPPER ── */
+  .chapters {
+    position: relative;
+  }
+
+  /* ── CHAPTER ── */
+  .chapter {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chapter:nth-child(even) { direction: rtl; }
+  .chapter:nth-child(even) > * { direction: ltr; }
+
+  .chapter-visual {
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chapter-text {
+    padding: 6rem 5vw 6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .ch-num {
+    font-family: 'Syne Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .ch-num::after {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  .ch-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .ch-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    font-weight: 300;
+    color: rgba(245,240,232,0.5);
+    margin-bottom: 2.5rem;
+  }
+
+  .ch-divider {
+    width: 40px; height: 1px;
+    background: var(--gold);
+    margin-bottom: 2.5rem;
+    opacity: 0.6;
+  }
+
+  .ch-body {
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    font-weight: 300;
+    line-height: 1.9;
+    color: rgba(245,240,232,0.82);
+  }
+
+  .ch-body p { margin-bottom: 1.25rem; }
+
+  .pullquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--paper);
+    border-left: 2px solid var(--gold);
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    margin: 2rem 0;
+  }
+
+  /* ── VISUAL PANELS ── */
+  /* Chapter 1 — The Assumption */
+  .vis-assumption {
+    background: radial-gradient(ellipse at center, #1a0e3d 0%, var(--ink) 70%);
+    width: 100%; height: 100%;
+  }
+  .token-stream {
+    position: absolute; inset: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 2rem;
+  }
+  .token-row {
+    display: flex;
+    gap: 4px;
+    animation: slideLeft var(--spd, 20s) linear infinite;
+    white-space: nowrap;
+  }
+  .token-row:nth-child(even) { animation-direction: reverse; }
+  @keyframes slideLeft {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .tok {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    background: rgba(61,43,110,0.5);
+    border: 0.5px solid rgba(201,168,76,0.15);
+    color: rgba(201,168,76,0.6);
+    flex-shrink: 0;
+  }
+  .tok.bright { background: rgba(61,43,110,0.9); color: var(--gold); border-color: rgba(201,168,76,0.5); }
+
+  /* Chapter 2 — The Challenge */
+  .vis-challenge {
+    background: radial-gradient(ellipse at center, #0d2e28 0%, var(--ink) 70%);
+    width: 100%; height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  .brain-rings {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulseRing var(--d, 4s) ease-in-out infinite;
+  }
+  @keyframes pulseRing {
+    0%   { opacity: var(--o, 0.3); transform: translate(-50%,-50%) scale(1); }
+    50%  { opacity: var(--o2, 0.6); transform: translate(-50%,-50%) scale(1.05); }
+    100% { opacity: var(--o, 0.3); transform: translate(-50%,-50%) scale(1); }
+  }
+  .brain-center {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,107,90,0.8), rgba(26,107,90,0.2));
+    border: 1px solid rgba(26,171,144,0.6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { box-shadow: 0 0 20px rgba(26,107,90,0.3); }
+    to   { box-shadow: 0 0 60px rgba(26,107,90,0.7), 0 0 100px rgba(26,107,90,0.3); }
+  }
+  .thought-particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    background: var(--teal);
+    border-radius: 50%;
+    animation: orbit var(--d, 6s) linear infinite;
+    top: 50%; left: 50%;
+    transform-origin: var(--tx, 80px) var(--ty, 0px);
+  }
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(var(--r, 80px)); }
+    to   { transform: rotate(360deg) translateX(var(--r, 80px)); }
+  }
+
+  /* Chapter 3 — Three Levels */
+  .vis-levels {
+    background: radial-gradient(ellipse at center, #1a0a04 0%, var(--ink) 70%);
+    width: 100%; height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+    padding: 3rem;
+  }
+  .level-bar {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s var(--delay, 0s) forwards;
+  }
+  .level-label {
+    font-family: 'Syne Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    min-width: 70px;
+    text-align: right;
+  }
+  .level-track {
+    flex: 1;
+    height: 2px;
+    background: rgba(245,240,232,0.08);
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+  .level-fill {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    border-radius: 1px;
+    animation: fillBar 1.5s var(--fdelay, 0.3s) cubic-bezier(0.23,1,0.32,1) forwards;
+    width: 0;
+  }
+  @keyframes fillBar {
+    to { width: var(--w, 60%); }
+  }
+  .level-icon {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    border: 1px solid rgba(245,240,232,0.15);
+  }
+  .level-desc-small {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: rgba(245,240,232,0.4);
+    width: 100%;
+    max-width: 320px;
+    text-align: right;
+    margin-top: -16px;
+  }
+
+  /* Chapter 4 — Four Worlds */
+  .vis-worlds {
+    background: var(--ink);
+    width: 100%; height: 100%;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1px;
+  }
+  .world-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.4s;
+  }
+  .world-cell::before {
+    content: '';
+    position: absolute; inset: 0;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .world-cell:hover::before { opacity: 1; }
+  .wc-physical { background: rgba(26,107,90,0.05); }
+  .wc-physical::before { background: radial-gradient(ellipse at center, rgba(26,107,90,0.15), transparent 70%); }
+  .wc-digital  { background: rgba(61,43,110,0.05); }
+  .wc-digital::before  { background: radial-gradient(ellipse at center, rgba(61,43,110,0.2), transparent 70%); }
+  .wc-social   { background: rgba(139,58,30,0.05); }
+  .wc-social::before   { background: radial-gradient(ellipse at center, rgba(139,58,30,0.15), transparent 70%); }
+  .wc-science  { background: rgba(201,168,76,0.05); }
+  .wc-science::before  { background: radial-gradient(ellipse at center, rgba(201,168,76,0.1), transparent 70%); }
+  .world-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+  .world-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .world-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: rgba(245,240,232,0.4);
+    text-align: center;
+  }
+
+  /* Chapter 5 — Finale */
+  .chapter-finale {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 10vw;
+    position: relative;
+    overflow: hidden;
+  }
+  .finale-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 100% 80% at 50% 50%, #1a0e3d 0%, var(--ink) 65%);
+  }
+  .finale-orb {
+    position: absolute;
+    width: 500px; height: 500px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.08);
+    animation: slowSpin 30s linear infinite;
+  }
+  .finale-orb::before {
+    content: '';
+    position: absolute;
+    width: 350px; height: 350px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.05);
+  }
+  @keyframes slowSpin {
+    from { transform: translate(-50%,-50%) rotate(0deg); }
+    to   { transform: translate(-50%,-50%) rotate(360deg); }
+  }
+  .finale-content { position: relative; z-index: 1; max-width: 700px; }
+  .finale-eye {
+    font-size: 4rem;
+    margin-bottom: 2rem;
+    animation: breathe 4s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%,100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(201,168,76,0.3)); }
+    50%      { transform: scale(1.08); filter: drop-shadow(0 0 30px rgba(201,168,76,0.7)); }
+  }
+  .finale-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+  }
+  .finale-title em {
+    font-style: italic;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .finale-body {
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    font-weight: 300;
+    line-height: 1.9;
+    color: rgba(245,240,232,0.7);
+    margin-bottom: 3rem;
+  }
+  .finale-line {
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    margin: 0 auto 3rem;
+  }
+  .tag-line {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: rgba(245,240,232,0.25);
+    text-transform: uppercase;
+  }
+
+  /* ── SCROLLING BAND ── */
+  .marquee-band {
+    background: var(--gold);
+    color: var(--ink);
+    padding: 0.75rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .marquee-inner {
+    display: inline-flex;
+    gap: 2rem;
+    animation: marquee 20s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .marquee-item {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .marquee-dot {
+    display: inline-block;
+    width: 4px; height: 4px;
+    background: rgba(10,10,15,0.4);
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 0 1rem;
+  }
+
+  /* ── CONCEPT CARDS ── */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(245,240,232,0.08);
+    border: 1px solid rgba(245,240,232,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 2.5rem 0;
+  }
+  .concept-item {
+    background: rgba(10,10,15,0.6);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: background 0.3s;
+  }
+  .concept-item:hover { background: rgba(61,43,110,0.3); }
+  .ci-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+  }
+  .ci-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+  .ci-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: rgba(245,240,232,0.5);
+    line-height: 1.5;
+  }
+
+  /* ── LEVELS SECTION ── */
+  .levels-stack {
+    margin: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .ls-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: rgba(245,240,232,0.03);
+    border: 0.5px solid rgba(245,240,232,0.06);
+    border-radius: 4px;
+    transition: background 0.3s, border-color 0.3s;
+    cursor: default;
+  }
+  .ls-item:hover {
+    background: rgba(245,240,232,0.06);
+    border-color: rgba(201,168,76,0.2);
+  }
+  .ls-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    line-height: 1;
+    color: rgba(201,168,76,0.25);
+    min-width: 36px;
+  }
+  .ls-body {}
+  .ls-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .ls-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: rgba(245,240,232,0.7);
+  }
+
+  /* ── ENV GRID ── */
+  .env-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(245,240,232,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 2.5rem 0;
+  }
+  .env-cell {
+    background: rgba(10,10,15,0.7);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .env-cell::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    transform: translate(30%, 30%);
+    opacity: 0.15;
+  }
+  .env-physical::after { background: var(--teal); }
+  .env-digital::after  { background: var(--violet2); }
+  .env-social::after   { background: var(--rust); }
+  .env-science::after  { background: var(--gold); }
+  .env-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+  .env-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    color: var(--paper);
+  }
+  .env-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(245,240,232,0.5);
+  }
+
+  /* ── STICKY CHAPTER INDICATOR ── */
+  .chapter-indicator {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 100;
+  }
+  .ci-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(245,240,232,0.2);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    position: relative;
+  }
+  .ci-dot.active {
+    background: var(--gold);
+    transform: scale(1.4);
+  }
+  .ci-dot::before {
+    content: attr(data-label);
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Syne Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.5);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .ci-dot:hover::before { opacity: 1; }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s cubic-bezier(0.23,1,0.32,1), transform 0.9s cubic-bezier(0.23,1,0.32,1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── GDP EVENT BAND ── */
+  .event-band {
+    background: rgba(201,168,76,0.07);
+    border-top: 1px solid rgba(201,168,76,0.14);
+    border-bottom: 1px solid rgba(201,168,76,0.14);
+    padding: 0.65rem 4vw;
+    display: flex; align-items: center; justify-content: center;
+    gap: 2.5rem; flex-wrap: wrap;
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px; letter-spacing: 0.2em;
+    color: rgba(201,168,76,0.75);
+    text-transform: uppercase;
+  }
+  .event-band-item { display: flex; align-items: center; gap: 0.6rem; }
+  .event-band-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(201,168,76,0.35); }
+
+  /* ── SPEAKERS SECTION ── */
+  .speakers-section {
+    background: var(--ink);
+    padding: 6rem 8vw;
+    border-top: 1px solid rgba(201,168,76,0.08);
+    position: relative; overflow: hidden;
+  }
+  .speakers-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(35,65,199,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .sec-eyebrow {
+    font-family: 'Syne Mono', monospace;
+    font-size: 10px; letter-spacing: 0.3em; color: var(--gold);
+    text-transform: uppercase; display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .sec-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--gold); opacity: 0.5; }
+  .sec-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3rem); font-weight: 600;
+    line-height: 1.1; margin-bottom: 0.4rem; letter-spacing: -0.01em;
+  }
+  .sec-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 1.1rem; font-weight: 300;
+    color: rgba(245,240,232,0.4); margin-bottom: 3rem;
+  }
+  .speakers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px; background: rgba(245,240,232,0.07);
+    border-radius: 4px; overflow: hidden; margin-bottom: 5rem;
+  }
+  .speaker-card {
+    background: rgba(10,10,15,0.9);
+    padding: 2rem 1.5rem;
+    display: flex; flex-direction: column; gap: 1rem;
+    transition: background 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .speaker-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.23,1,0.32,1);
+  }
+  .speaker-card:hover { background: rgba(26,32,87,0.25); }
+  .speaker-card:hover::after { transform: scaleX(1); }
+  .speaker-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .speaker-name {
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600;
+    letter-spacing: 0.04em; color: var(--paper);
+  }
+  .speaker-role {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 13px; font-weight: 300;
+    color: rgba(245,240,232,0.4); line-height: 1.45;
+  }
+  .speaker-tag {
+    font-family: 'Syne Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); opacity: 0.7;
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 3px 8px; border-radius: 2px;
+    display: inline-block; align-self: flex-start;
+  }
+
+  /* ── FORMAT STRIP ── */
+  .format-strip {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 1px; background: rgba(245,240,232,0.07);
+    border-radius: 4px; overflow: hidden; margin-bottom: 5rem;
+  }
+  .format-cell {
+    background: rgba(10,10,15,0.9);
+    padding: 2rem 1.5rem;
+  }
+  .format-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem; font-weight: 300; line-height: 1;
+    color: rgba(201,168,76,0.2); margin-bottom: 1rem;
+  }
+  .format-name {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.5rem;
+  }
+  .format-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px; font-weight: 300; font-style: italic;
+    line-height: 1.65; color: rgba(245,240,232,0.5);
+  }
+
+  /* ── REGISTER CTA ── */
+  .register-section {
+    background: var(--ink);
+    border-top: 1px solid rgba(201,168,76,0.08);
+    padding: 6rem 8vw;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .register-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .reg-label {
+    font-family: 'Syne Mono', monospace; font-size: 10px;
+    letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .reg-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 4rem); font-weight: 300; line-height: 1.1;
+    margin-bottom: 1.5rem; letter-spacing: -0.02em;
+  }
+  .reg-title em { font-style: italic; font-weight: 600; color: var(--gold2); }
+  .reg-body {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+    font-weight: 300; line-height: 1.8; color: rgba(245,240,232,0.55);
+    max-width: 520px; margin: 0 auto 3rem;
+  }
+  .reg-details {
+    display: flex; align-items: center; justify-content: center;
+    gap: 2rem; flex-wrap: wrap; margin-bottom: 3rem;
+  }
+  .reg-detail {
+    display: flex; flex-direction: column; gap: 4px; align-items: center;
+  }
+  .reg-detail-label {
+    font-family: 'Syne Mono', monospace; font-size: 9px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,232,0.3);
+  }
+  .reg-detail-val {
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--paper);
+  }
+  .reg-divider { width: 1px; height: 36px; background: rgba(245,240,232,0.1); }
+  .reg-btn {
+    display: inline-block;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none;
+    color: var(--ink); background: var(--gold);
+    padding: 14px 40px; border-radius: 3px;
+    border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-bottom: 1rem;
+  }
+  .reg-btn:hover { background: var(--gold2); transform: translateY(-1px); }
+  .reg-note {
+    font-family: 'Syne Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; color: rgba(245,240,232,0.2);
+    text-transform: uppercase; margin-top: 1rem;
+  }
+
+  /* ── GDP FOOTER ── */
+  .gdp-footer {
+    background: rgba(5,5,8,1);
+    border-top: 1px solid rgba(201,168,76,0.08);
+    padding: 2.5rem 8vw;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-brand {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .footer-eagle { width: 32px; height: 32px; }
+  .footer-name {
+    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
+    letter-spacing: 0.22em; color: rgba(245,240,232,0.6);
+  }
+  .footer-right {
+    font-family: 'Syne Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; color: rgba(245,240,232,0.2); text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .chapter { grid-template-columns: 1fr; }
+    .chapter:nth-child(even) { direction: ltr; }
+    .chapter-visual { min-height: 40vh; }
+    .chapter-text { padding: 4rem 6vw; }
+    .hero-content { padding: 6rem 6vw 3rem; }
+    .concept-grid { grid-template-columns: 1fr; }
+    .env-4 { grid-template-columns: 1fr; }
+    .vis-worlds { grid-template-columns: 1fr 1fr; }
+    .chapter-indicator { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Chapter indicator dots -->
+<nav class="chapter-indicator" aria-label="Chapter navigation">
+  <div class="ci-dot active" data-section="0" data-label="The Assumption" onclick="scrollToSection(0)"></div>
+  <div class="ci-dot" data-section="1" data-label="The Challenge" onclick="scrollToSection(1)"></div>
+  <div class="ci-dot" data-section="2" data-label="Three Levels" onclick="scrollToSection(2)"></div>
+  <div class="ci-dot" data-section="3" data-label="Four Worlds" onclick="scrollToSection(3)"></div>
+  <div class="ci-dot" data-section="4" data-label="What Comes Next" onclick="scrollToSection(4)"></div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" data-section="0">
+  <div class="hero-bg"></div>
+  <div class="star-field" id="starField"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">GDP Talks · 17 May 2026</div>
+    <h1 class="hero-title">
+      <span class="line1">World Models</span>
+      <span class="line2">:: AI</span>
+    </h1>
+    <p class="hero-desc">A gathering where participants share their views, ongoing research, and ideas they found too interesting to keep to themselves. Come for the curiosity. Stay for the conversation.</p>
+    <div class="hero-meta">
+      <span>17 May 2026</span>
+      <span>·</span>
+      <span>GDP Talks</span>
+      <span>·</span>
+      <span>Open to all</span>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span class="scroll-line"></span>
+    scroll to begin
+  </div>
+</section>
+
+<!-- Event band -->
+<div class="event-band">
+  <div class="event-band-item"><span>GDP Talks</span></div>
+  <div class="event-band-dot"></div>
+  <div class="event-band-item"><span>17 May 2026</span></div>
+  <div class="event-band-dot"></div>
+  <div class="event-band-item"><span>World Models :: AI</span></div>
+  <div class="event-band-dot"></div>
+  <div class="event-band-item"><span>Open · Curious · Collaborative</span></div>
+</div>
+
+<!-- Marquee -->
+<div class="marquee-band">
+  <div class="marquee-inner" id="marquee"></div>
+</div>
+
+<!-- ── CHAPTER I ── -->
+<section class="chapter" data-section="1">
+  <div class="chapter-visual vis-assumption">
+    <div class="token-stream" id="tokenStream"></div>
+  </div>
+  <div class="chapter-text">
+    <div class="reveal">
+      <div class="ch-num">Chapter I</div>
+      <h2 class="ch-title">The Assumption</h2>
+      <p class="ch-subtitle">How predicting the next token became a belief system</p>
+      <div class="ch-divider"></div>
+      <div class="ch-body">
+        <p>For the last few years, modern AI advanced through a surprisingly simple principle: predict the next token at massive scale. Researchers trained increasingly large transformers on enormous datasets, and capabilities emerged almost automatically.</p>
+        <p>Systems learned to write essays, generate code, solve mathematical problems — with a level of fluency that once seemed distant. That success created a powerful assumption across the field.</p>
+        <div class="pullquote">"Many began to believe that intelligence itself might emerge from sufficiently advanced sequence prediction."</div>
+        <p>Predict enough, at enough scale, and understanding would follow. Awareness would emerge. Agency would arrive. The logic was seductive — and for a while, it seemed to be working.</p>
+      </div>
+    </div>
+    <div class="concept-grid reveal">
+      <div class="concept-item">
+        <div class="ci-icon">⚡</div>
+        <div class="ci-label">Transformers</div>
+        <div class="ci-desc">Architecture trained to predict the next token in a sequence</div>
+      </div>
+      <div class="concept-item">
+        <div class="ci-icon">📈</div>
+        <div class="ci-label">Scaling Laws</div>
+        <div class="ci-desc">Capability grows predictably with model size and data</div>
+      </div>
+      <div class="concept-item">
+        <div class="ci-icon">✨</div>
+        <div class="ci-label">Emergence</div>
+        <div class="ci-desc">Abilities that appear suddenly — not programmed, but arising</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CHAPTER II ── -->
+<section class="chapter" data-section="2">
+  <div class="chapter-visual vis-challenge">
+    <div class="brain-rings" id="brainRings">
+      <div class="brain-center">🧠</div>
+    </div>
+  </div>
+  <div class="chapter-text">
+    <div class="reveal">
+      <div class="ch-num">Chapter II</div>
+      <h2 class="ch-title">The Challenge</h2>
+      <p class="ch-subtitle">Why prediction alone cannot birth a true agent</p>
+      <div class="ch-divider"></div>
+      <div class="ch-body">
+        <p>AI is no longer confined to chat interfaces. The industry is shifting rapidly toward agents — systems that operate inside environments, pursue goals, interact with tools, and make decisions across long time horizons.</p>
+        <p>These systems face a fundamental problem: they cannot rely purely on local pattern completion. They must anticipate consequences, simulate future states, and revise their behavior when reality contradicts their expectations.</p>
+        <div class="pullquote">"Humans continuously rely on such models. We anticipate rain from dark clouds, predict the arc of a moving object, and infer emotional tension from a shift in someone's tone."</div>
+        <p>A new paper — <em>Agentic World Modeling</em> — proposes that advanced AI must develop the same capacity. It must build an internal predictive representation of how the world evolves through time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CHAPTER III ── -->
+<section class="chapter" data-section="3">
+  <div class="chapter-visual vis-levels" id="visLevels">
+    <div class="level-bar" style="--delay:0.2s">
+      <div class="level-label">PREDICTOR</div>
+      <div class="level-track"><div class="level-fill" style="background: rgba(245,240,232,0.3); --w:40%; --fdelay:0.5s"></div></div>
+      <div class="level-icon" style="background:rgba(245,240,232,0.05)">👁</div>
+    </div>
+    <div class="level-desc-small" style="opacity:0; animation: fadeUp 0.8s 0.4s forwards; font-size:12px">local pattern completion</div>
+
+    <div class="level-bar" style="--delay:0.5s">
+      <div class="level-label">SIMULATOR</div>
+      <div class="level-track"><div class="level-fill" style="background: rgba(26,107,90,0.7); --w:68%; --fdelay:0.8s"></div></div>
+      <div class="level-icon" style="background:rgba(26,107,90,0.1); border-color: rgba(26,107,90,0.4);">🔮</div>
+    </div>
+    <div class="level-desc-small" style="opacity:0; animation: fadeUp 0.8s 0.7s forwards; font-size:12px; color: rgba(26,171,144,0.4)">trajectory modeling</div>
+
+    <div class="level-bar" style="--delay:0.8s">
+      <div class="level-label">EVOLVER</div>
+      <div class="level-track"><div class="level-fill" style="background: linear-gradient(90deg, var(--gold), var(--gold2)); --w:95%; --fdelay:1.1s"></div></div>
+      <div class="level-icon" style="background:rgba(201,168,76,0.1); border-color: rgba(201,168,76,0.4);">🌀</div>
+    </div>
+    <div class="level-desc-small" style="opacity:0; animation: fadeUp 0.8s 1s forwards; font-size:12px; color: rgba(201,168,76,0.5)">self-revising causal models</div>
+  </div>
+
+  <div class="chapter-text">
+    <div class="reveal">
+      <div class="ch-num">Chapter III</div>
+      <h2 class="ch-title">Three Levels</h2>
+      <p class="ch-subtitle">How world models deepen from prediction to evolution</p>
+      <div class="ch-divider"></div>
+      <div class="ch-body">
+        <p>The paper organizes world modeling systems along a spectrum of sophistication. Each level represents a different relationship with time, consequence, and reality itself.</p>
+      </div>
+    </div>
+    <div class="levels-stack reveal">
+      <div class="ls-item">
+        <div class="ls-num">1</div>
+        <div class="ls-body">
+          <div class="ls-name">Predictor</div>
+          <div class="ls-desc">Estimates the next state from the current state and an action. Most language models live here — excellent at local prediction, but losing coherence across extended workflows.</div>
+        </div>
+      </div>
+      <div class="ls-item">
+        <div class="ls-num">2</div>
+        <div class="ls-body">
+          <div class="ls-name">Simulator</div>
+          <div class="ls-desc">Models entire trajectories. Evaluates sequences of actions before committing. A robotics agent simulates collisions. A browser agent anticipates authentication flows before touching a single button.</div>
+        </div>
+      </div>
+      <div class="ls-item">
+        <div class="ls-num">3</div>
+        <div class="ls-body">
+          <div class="ls-name">Evolver</div>
+          <div class="ls-desc">Revises its own world model when evidence contradicts its assumptions. Not just predicting outcomes — updating causal structure itself. This is the architecture of genuine scientific discovery.</div>
+        </div>
+      </div>
+    </div>
+    <div class="pullquote reveal">"Such systems point toward autonomous scientific agents capable of iterative hypothesis formation and self-correction."</div>
+  </div>
+</section>
+
+<!-- ── CHAPTER IV ── -->
+<section class="chapter" data-section="4">
+  <div class="chapter-visual vis-worlds">
+    <div class="world-cell wc-physical">
+      <div class="world-icon">🏔</div>
+      <div class="world-name" style="color:rgba(26,171,144,0.8)">Physical</div>
+      <div class="world-tag">Mechanics · Motion · Space</div>
+    </div>
+    <div class="world-cell wc-digital">
+      <div class="world-icon">💻</div>
+      <div class="world-name" style="color:rgba(130,100,220,0.8)">Digital</div>
+      <div class="world-tag">APIs · Browsers · Code</div>
+    </div>
+    <div class="world-cell wc-social">
+      <div class="world-icon">🌐</div>
+      <div class="world-name" style="color:rgba(200,100,60,0.8)">Social</div>
+      <div class="world-tag">Markets · Beliefs · Strategy</div>
+    </div>
+    <div class="world-cell wc-science">
+      <div class="world-icon">⚗️</div>
+      <div class="world-name" style="color:rgba(201,168,76,0.8)">Scientific</div>
+      <div class="world-tag">Unknown laws · Discovery</div>
+    </div>
+  </div>
+
+  <div class="chapter-text">
+    <div class="reveal">
+      <div class="ch-num">Chapter IV</div>
+      <h2 class="ch-title">Four Worlds</h2>
+      <p class="ch-subtitle">The environments agents must learn to inhabit</p>
+      <div class="ch-divider"></div>
+      <div class="ch-body">
+        <p>Beyond capability levels, the paper examines the kinds of laws governing different environments. No world model is universal — each domain demands a radically different representation of reality.</p>
+      </div>
+    </div>
+    <div class="env-4 reveal">
+      <div class="env-cell env-physical">
+        <div class="env-icon">🏔</div>
+        <div class="env-name">Physical worlds</div>
+        <div class="env-desc">Robotics and autonomous driving. Governed by mechanics and spatial interaction. Relatively stable — physics doesn't change overnight.</div>
+      </div>
+      <div class="env-cell env-digital">
+        <div class="env-icon">💻</div>
+        <div class="env-name">Digital worlds</div>
+        <div class="env-desc">Browsers, APIs, operating systems. A button click changes state. Today's most commercially valuable agents already live here.</div>
+      </div>
+      <div class="env-cell env-social">
+        <div class="env-icon">🌐</div>
+        <div class="env-name">Social worlds</div>
+        <div class="env-desc">Financial markets, institutions, communities. These environments react to predictions made about them — extraordinarily unstable.</div>
+      </div>
+      <div class="env-cell env-science">
+        <div class="env-icon">⚗️</div>
+        <div class="env-name">Scientific worlds</div>
+        <div class="env-desc">Drug discovery, materials science, biology. The governing laws are unknown. Agents must infer hidden causal structures at the edge of human knowledge.</div>
+      </div>
+    </div>
+    <div class="pullquote reveal">"The act of prediction can alter the underlying reality itself. Social world modeling is extraordinarily unstable."</div>
+  </div>
+</section>
+
+<!-- ── SPEAKERS ── -->
+<section class="speakers-section">
+  <div class="sec-eyebrow">Who's Talking</div>
+  <h2 class="sec-title reveal">The Speakers</h2>
+  <p class="sec-sub reveal">Participants sharing their views, their research, and the ideas they found fascinating</p>
+
+  <div class="speakers-grid reveal">
+    <div class="speaker-card">
+      <div class="speaker-avatar">◈</div>
+      <div class="speaker-name">Placeholder Speaker</div>
+      <div class="speaker-role">Researcher · Personal interest in agentic AI and world modeling</div>
+      <div class="speaker-tag">Research View</div>
+    </div>
+    <div class="speaker-card">
+      <div class="speaker-avatar">◇</div>
+      <div class="speaker-name">Placeholder Speaker</div>
+      <div class="speaker-role">Student · Exploring simulation-based planning in language models</div>
+      <div class="speaker-tag">Ongoing Work</div>
+    </div>
+    <div class="speaker-card">
+      <div class="speaker-avatar">◉</div>
+      <div class="speaker-name">Placeholder Speaker</div>
+      <div class="speaker-role">Curious mind · Presenting a paper they found deeply interesting</div>
+      <div class="speaker-tag">Paper Breakdown</div>
+    </div>
+    <div class="speaker-card">
+      <div class="speaker-avatar">◎</div>
+      <div class="speaker-name">You?</div>
+      <div class="speaker-role">Have a view on world models? A paper you can't stop thinking about?</div>
+      <div class="speaker-tag">Open Slot</div>
+    </div>
+  </div>
+
+  <div class="sec-eyebrow reveal">The Format</div>
+  <h2 class="sec-title reveal">How it Works</h2>
+  <p class="sec-sub reveal">No gatekeeping. No credentials required. Just ideas worth sharing.</p>
+
+  <div class="format-strip reveal">
+    <div class="format-cell">
+      <div class="format-num">01</div>
+      <div class="format-name">Your View</div>
+      <div class="format-desc">Share your own take on where AI is heading — no formal research required. Just a perspective worth arguing for.</div>
+    </div>
+    <div class="format-cell">
+      <div class="format-num">02</div>
+      <div class="format-name">Someone's Research</div>
+      <div class="format-desc">Found a paper or project you couldn't stop thinking about? Break it down for the room. Make us care about it too.</div>
+    </div>
+    <div class="format-cell">
+      <div class="format-num">03</div>
+      <div class="format-name">Open Discussion</div>
+      <div class="format-desc">Every talk ends with the floor open. We're here to catch the current wind of the topic — together.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── REGISTER ── -->
+<section class="register-section" id="register">
+  <div class="reg-label reveal">17 May 2026 · GDP Talks</div>
+  <h2 class="reg-title reveal">Come.<br><em>Think out loud.</em></h2>
+  <p class="reg-body reveal">GDP Talks is a space to share what you're reading, what you're building, and what you can't stop wondering about. World Models :: AI is the topic. The conversation belongs to everyone.</p>
+
+  <div class="reg-details reveal">
+    <div class="reg-detail">
+      <div class="reg-detail-label">Date</div>
+      <div class="reg-detail-val">17 May 2026</div>
+    </div>
+    <div class="reg-divider"></div>
+    <div class="reg-detail">
+      <div class="reg-detail-label">Format</div>
+      <div class="reg-detail-val">Talks + Discussion</div>
+    </div>
+    <div class="reg-divider"></div>
+    <div class="reg-detail">
+      <div class="reg-detail-label">Entry</div>
+      <div class="reg-detail-val">Open to All</div>
+    </div>
+    <div class="reg-divider"></div>
+    <div class="reg-detail">
+      <div class="reg-detail-label">Hosted by</div>
+      <div class="reg-detail-val">G D P</div>
+    </div>
+  </div>
+
+  <div class="reveal">
+    <a href="#" class="reg-btn">Register Your Spot</a>
+    <div class="reg-note">Placeholder · Link coming soon</div>
+  </div>
+</section>
+
+<!-- ── GDP FOOTER ── -->
+<footer class="gdp-footer">
+  <div class="footer-brand">
+    <svg class="footer-eagle" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 4 C14 4 8 9 7 16 L10 14 C11 20 15 23 20 24 C25 23 29 20 30 14 L33 16 C32 9 26 4 20 4Z" fill="rgba(201,168,76,0.6)"/>
+      <path d="M7 16 L2 12 L8 18 Z" fill="rgba(201,168,76,0.4)"/>
+      <path d="M33 16 L38 12 L32 18 Z" fill="rgba(201,168,76,0.4)"/>
+      <path d="M17 24 L15 36 L20 30 L25 36 L23 24 Z" fill="rgba(201,168,76,0.5)"/>
+      <circle cx="15" cy="13" r="1.5" fill="rgba(201,168,76,0.9)"/>
+    </svg>
+    <span class="footer-name">G D P</span>
+  </div>
+  <div class="footer-right">GDP Talks · World Models :: AI · 17 May 2026</div>
+</footer>
+
+<!-- ── FINALE ── -->
+<section class="chapter-finale" data-section="5">
+  <div class="finale-bg"></div>
+  <div class="finale-orb"></div>
+  <div class="finale-content reveal">
+    <div class="finale-eye">◎</div>
+    <h2 class="finale-title">The conversation<br><em>starts here</em></h2>
+    <div class="finale-line"></div>
+    <p class="finale-body">Intelligence fundamentally depends on counterfactual simulation — the ability to imagine possible futures conditioned on different choices. Planning emerges from this capacity. Scientific reasoning emerges from it. Agency itself may depend on it.</p>
+    <p class="finale-body">On 17 May, we gather to ask what that means — for AI, for research, and for the ideas worth staying curious about. Bring your view. Bring what you've been reading. Bring your questions.</p>
+    <div class="pullquote" style="text-align:left; max-width:540px; margin: 2rem auto;">"We rarely care whether someone predicts every detail of the future perfectly. We care whether their mental model helps them navigate reality successfully."</div>
+    <div class="finale-line"></div>
+    <div class="tag-line">GDP Talks · World Models :: AI · 17 May 2026</div>
+  </div>
+</section>
+
+<script>
+// Custom cursor
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animCursor() {
+  cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+document.querySelectorAll('a,button,.world-cell,.ci-dot').forEach(el => {
+  el.addEventListener('mouseenter', () => { cur.style.width = '14px'; cur.style.height = '14px'; ring.style.width = '50px'; ring.style.height = '50px'; });
+  el.addEventListener('mouseleave', () => { cur.style.width = '8px'; cur.style.height = '8px'; ring.style.width = '36px'; ring.style.height = '36px'; });
+});
+
+// Stars
+const sf = document.getElementById('starField');
+for (let i = 0; i < 120; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const sz = Math.random() * 2 + 0.5;
+  s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--o1:${0.1+Math.random()*0.3};--o2:${0.5+Math.random()*0.5};animation-delay:${Math.random()*4}s`;
+  sf.appendChild(s);
+}
+
+// Marquee
+const items = ['World Models','Agentic AI','Causal Reasoning','Counterfactual Simulation','Next-Token Prediction','Temporal Reasoning','Scientific Discovery','The Architecture of Intelligence'];
+const m = document.getElementById('marquee');
+const content = items.map(t => `<span class="marquee-item">${t}</span><span class="marquee-dot"></span>`).join('');
+m.innerHTML = content.repeat(4);
+
+// Token stream
+const ts = document.getElementById('tokenStream');
+const words = ['predict','model','world','agent','future','state','action','causal','plan','time','reason','learn','adapt','evolve','simulate','token','sequence','transform','emerge','goal','environment','trajectory','revise','memory'];
+for (let r = 0; r < 14; r++) {
+  const row = document.createElement('div');
+  row.className = 'token-row';
+  row.style.setProperty('--spd', (15 + Math.random()*20)+'s');
+  let rowContent = '';
+  for (let t = 0; t < 30; t++) {
+    const w = words[Math.floor(Math.random()*words.length)];
+    const bright = Math.random() > 0.85;
+    rowContent += `<span class="tok${bright?' bright':''}">${w}</span>`;
+  }
+  row.innerHTML = rowContent + rowContent;
+  ts.appendChild(row);
+}
+
+// Brain rings
+const br = document.getElementById('brainRings');
+const ringData = [
+  {sz:80,  color:'rgba(26,107,90,0.6)',  d:3},
+  {sz:130, color:'rgba(26,107,90,0.35)', d:4},
+  {sz:190, color:'rgba(26,107,90,0.2)',  d:5},
+  {sz:260, color:'rgba(26,107,90,0.1)',  d:6.5},
+  {sz:340, color:'rgba(26,107,90,0.06)', d:8},
+];
+ringData.forEach((rd, i) => {
+  const el = document.createElement('div');
+  el.className = 'ring';
+  const o = 0.2 + (0.5 - i*0.08);
+  el.style.cssText = `width:${rd.sz}px;height:${rd.sz}px;border-color:${rd.color};--d:${rd.d}s;--o:${o};--o2:${o+0.2};animation-delay:${i*0.5}s`;
+  br.appendChild(el);
+});
+// Particles
+for (let i = 0; i < 8; i++) {
+  const p = document.createElement('div');
+  p.className = 'thought-particle';
+  const r = 60 + Math.random()*100;
+  p.style.cssText = `--r:${r}px;--d:${4+Math.random()*6}s;--tx:${r}px;--ty:0px;animation-delay:${Math.random()*6}s;background:${Math.random()>0.5?'var(--teal)':'var(--gold)'};opacity:${0.4+Math.random()*0.4}`;
+  br.appendChild(p);
+}
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.15 });
+reveals.forEach(r => revObs.observe(r));
+
+// Active section tracking
+const sections = document.querySelectorAll('[data-section]');
+const dots = document.querySelectorAll('.ci-dot');
+const secObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = parseInt(e.target.dataset.section);
+      dots.forEach(d => d.classList.remove('active'));
+      if (dots[idx]) dots[idx].classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => secObs.observe(s));
+
+function scrollToSection(n) {
+  const targets = document.querySelectorAll('[data-section]');
+  if (targets[n]) targets[n].scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
